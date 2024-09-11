@@ -1,5 +1,3 @@
-# model/board.py
-
 import random
 from minesweeper.models.cell import Cell
 
