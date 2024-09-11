@@ -5,9 +5,9 @@ from model.cell import Cell
 
 class Board:
     DIFFICULTY_LEVELS = {
-        'easy': {'x_size': 9, 'y_size': 9, 'mines': 10},
+        'easy': {'x_size': 9, 'y_size': 9, 'mines': 5},
         'medium': {'x_size': 16, 'y_size': 16, 'mines': 40},
-        'hard': {'x_size': 30, 'y_size': 16, 'mines': 99}
+        'hard': {'x_size': 30, 'y_size': 16, 'mines': 80}
     }
 
 
