@@ -2,7 +2,9 @@
 # initialize a cell with default attributes
 
 class Cell:
-    def __init__(self):
+    def __init__(self, x: int, y: int):
+        self.x = x
+        self.y = y
         self.is_mine = False
         self.is_opened = False
         self.is_flagged = False
