@@ -12,6 +12,7 @@ SET_FLAG_COMMAND = "set_flag_command"
 SAVE_COMMAND = "save_command"
 RESTORE_COMMAND = "restore_command"
 SCORES_COMMAND = "scores_command"
+START_TIME_COMMAND = "start_time_command"
 
 
 class Command(ABC):
@@ -43,6 +44,14 @@ class StartGameCommand(Command):
 
     def execute(self):
         self.receiver.create_game()
+
+
+class StartTimeCommand(Command):
+    def __init__(self, receiver):
+        super().__init__(receiver)
+
+    def execute(self):
+        self.receiver.start_timer()
 
 
 class SaveCommand(Command):

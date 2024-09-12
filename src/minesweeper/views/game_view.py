@@ -10,6 +10,7 @@ from minesweeper.controllers.command import (
     SET_FLAG_COMMAND,
     SAVE_COMMAND,
     RESTORE_COMMAND,
+    START_TIME_COMMAND,
     Command,
 )
 from minesweeper.models.board import (
@@ -89,6 +90,8 @@ class GameView:
                 print(f"Clicked on {grid_x}, {grid_y} and mouse button {event.button}")
                 if event.button == 1:
                     self.commands[REVEAL_CELL_COMMAND].execute(grid_x, grid_y)
+                    if not data.first_cell_revealed:
+                        self.commands[START_TIME_COMMAND].execute()
                 elif event.button == 3:
                     self.commands[SET_FLAG_COMMAND].execute(grid_x, grid_y)
         elif event.type == pygame.KEYDOWN:

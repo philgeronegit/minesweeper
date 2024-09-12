@@ -10,6 +10,7 @@ from minesweeper.controllers.command import (
     SET_FLAG_COMMAND,
     SAVE_COMMAND,
     RESTORE_COMMAND,
+    START_TIME_COMMAND,
     RestoreCommand,
     SaveCommand,
     ScoresCommand,
@@ -17,6 +18,7 @@ from minesweeper.controllers.command import (
     StartGameCommand,
     RevealCellsCommand,
     SetFlagCommand,
+    StartTimeCommand
 )
 from minesweeper.models.board import EASY_DIFFICULTY, MEDIUM_DIFFICULTY, HARD_DIFFICULTY
 from minesweeper.models.game_state import GameState
@@ -55,6 +57,7 @@ class GameController:
         self.view.set_command(SAVE_COMMAND, SaveCommand(self))
         self.view.set_command(RESTORE_COMMAND, RestoreCommand(self))
         self.view.set_command(SCORES_COMMAND, ScoresCommand(self))
+        self.view.set_command(START_TIME_COMMAND, StartTimeCommand(self))
 
     def show_scores(self):
         self.view.show_scores_dialog()
@@ -64,6 +67,10 @@ class GameController:
         print(f"Creating a new game with difficulty {self.model._board.difficulty} and grid size {self.model._board.x_size}x{self.model._board.y_size}")
         self.model.reset()
         self.view.reset(self.model._board.x_size, self.model._board.y_size)
+
+    def start_timer(self):
+        """Start the game timer"""
+        self.model.start_timer()
 
     def set_difficulty(self, difficulty: str):
         """Set the difficulty of the game"""
