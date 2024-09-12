@@ -17,7 +17,7 @@ def test_board_initialization(easy_game):
     """
     assert easy_game.board.x_size == 9
     assert easy_game.board.y_size == 9
-    assert easy_game.board.mines == 5
+    assert easy_game.board.mines_count == 5
 
 def test_cell_flagging(easy_game):
     """
