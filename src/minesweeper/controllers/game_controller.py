@@ -61,6 +61,7 @@ class GameController:
 
     def create_game(self):
         """Create a new game"""
+        print(f"Creating a new game with difficulty {self.model.board.difficulty} and grid size {self.model.board.x_size}x{self.model.board.y_size}")
         self.model.reset()
         self.view.reset(self.model.board.x_size, self.model.board.y_size)
 

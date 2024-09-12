@@ -8,7 +8,7 @@ HARD_DIFFICULTY = 'hard'
 DIFFICULTY_LEVELS = {
     EASY_DIFFICULTY: {'x_size': 9, 'y_size': 9, 'mines': 5},
     MEDIUM_DIFFICULTY: {'x_size': 16, 'y_size': 16, 'mines': 40},
-    HARD_DIFFICULTY: {'x_size': 30, 'y_size': 16, 'mines': 80}
+    HARD_DIFFICULTY: {'x_size': 16, 'y_size': 30, 'mines': 80}
 }
 
 class Board:
@@ -20,8 +20,6 @@ class Board:
             self.cells = cells
         else:
             self.create_board()        
-        self.generate_mines()               # Random placement of mines
-        self._calculate_adjacent_mines()    # Calculate adjacent mines for each cell
 
     def create_board(self):
         self.flags = 0
@@ -31,6 +29,7 @@ class Board:
         self.cells = [
             [Cell() for _ in range(self.y_size)] for _ in range(self.x_size)
         ]
+        print(f"Board created with {self.x_size}x{self.y_size} cells and {self.mines} mines")
 
     # Initializes the board based on the difficulty level.
     @classmethod
@@ -44,12 +43,14 @@ class Board:
 
     # Randomly places mines on the board.
     def generate_mines(self):
+        self.create_board()
         mine_positions = set()
         while len(mine_positions) < self.mines:
             x, y = random.randint(0, self.x_size - 1), random.randint(0, self.y_size - 1)
             if not self.cells[x][y].is_mine:
                 self.cells[x][y].is_mine = True
                 mine_positions.add((x, y))
+        self._calculate_adjacent_mines()
 
     # Calculates the number of adjacent mines for each non-mined cell.
     def _calculate_adjacent_mines(self):
@@ -79,6 +80,7 @@ class Board:
 
     # Reveals the specified cell and adjacent cells if it has no nearby mines.
     def reveal_cells(self, x, y):
+        print(f"Reveal cell {x} {y}")
         cell = self.cells[x][y]
         if cell.is_opened or cell.is_flagged:
             return
