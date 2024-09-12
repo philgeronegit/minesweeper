@@ -121,7 +121,8 @@ class GameView:
             y * (CELL_SIZE + MARGIN) + MENU_WIDTH,
             x * (CELL_SIZE + MARGIN),
             CELL_SIZE,
-            CELL_SIZE)
+            CELL_SIZE,
+        )
 
     def draw_cell(self, x: int, y: int, cell: Cell, data: GameStateDTO):
         """Draw a cell"""
@@ -148,8 +149,12 @@ class GameView:
                 cell = cells[x][y]
                 self.draw_cell(x, y, cell, data)
         if data.game_over:
-            self.all_sprites.update()
-            self.all_sprites.draw(self.screen)                
+            animation_complete = all(
+                [sprite.animation_complete for sprite in self.all_sprites]
+            )
+            if not animation_complete:
+                self.all_sprites.update()
+                self.all_sprites.draw(self.screen)
 
     def __add_menu_buttons(self, btn, command_name: str):
         """Add menu button and connect it to a command"""
@@ -280,7 +285,7 @@ class GameView:
             for mine in model.mines:
                 print(f"Creating explosion at {mine.x} {mine.y}")
                 rect = self.compute_rect(mine.x, mine.y)
-                explosion = AnimatedExplosion(rect.centerx, rect.centery)      
+                explosion = AnimatedExplosion(rect.centerx, rect.centery)
                 self.all_sprites.add(explosion)
         self.draw_menu(model)
         self.draw_board(model)
