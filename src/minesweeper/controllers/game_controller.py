@@ -34,7 +34,7 @@ class GameController:
         self.clock = pygame.time.Clock()
         self.running = True
         self.create_commands()
-        model.board.generate_mines()
+        model._board.generate_mines()
         self.persistence = PicklePersistence()
         self.save_date = None
 
@@ -61,24 +61,24 @@ class GameController:
 
     def create_game(self):
         """Create a new game"""
-        print(f"Creating a new game with difficulty {self.model.board.difficulty} and grid size {self.model.board.x_size}x{self.model.board.y_size}")
+        print(f"Creating a new game with difficulty {self.model._board.difficulty} and grid size {self.model._board.x_size}x{self.model._board.y_size}")
         self.model.reset()
-        self.view.reset(self.model.board.x_size, self.model.board.y_size)
+        self.view.reset(self.model._board.x_size, self.model._board.y_size)
 
     def set_difficulty(self, difficulty: str):
         """Set the difficulty of the game"""
-        self.model.board.difficulty = difficulty
+        self.model._board.difficulty = difficulty
 
     def reveal_cells(self, x: int, y: int):
         """Reveal cells on the board"""
         try:
-            self.model.board.reveal_cells(x, y)
+            self.model._board.reveal_cells(x, y)
         except ValueError:
             self.model.game_over = True
 
     def set_flag(self, x: int, y: int):
         """Set a flag on a cell"""
-        self.model.board.set_flag(x, y)
+        self.model._board.set_flag(x, y)
 
     def restore(self):
         if self.persistence.is_file_exists():
@@ -93,7 +93,7 @@ class GameController:
             if event.type == pygame.QUIT:
                 self.running = False
             else:
-                self.view.handle_input(event, self.model.game_over)
+                self.view.handle_input(event, self.model.get_data())
 
     def run(self):
         """Main game loop"""

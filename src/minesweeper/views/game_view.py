@@ -18,7 +18,7 @@ from minesweeper.models.board import (
     MEDIUM_DIFFICULTY,
     HARD_DIFFICULTY,
 )
-from minesweeper.models.game_state import GameState
+from minesweeper.models.game_state import GameStateDTO
 from minesweeper.models.cell import Cell
 from minesweeper.views.animated_sprite import AnimatedExplosion
 from minesweeper.views.button import Button, OptionButton
@@ -71,9 +71,10 @@ class GameView:
 
     @property
     def center(self):
+        """Return the center of the window"""
         return (self.window_width // 2, self.window_height // 2)
 
-    def handle_input(self, event, game_over: bool):
+    def handle_input(self, event, data: GameStateDTO):
         """Handle user input"""
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
@@ -81,7 +82,7 @@ class GameView:
                 for button in self.menu_buttons.values():
                     button.handle_input(event)
             else:
-                if game_over:
+                if data.game_over:
                     return
                 grid_x = y // (CELL_SIZE + MARGIN)
                 grid_y = (x - MENU_WIDTH) // (CELL_SIZE + MARGIN)
@@ -119,10 +120,10 @@ class GameView:
             CELL_SIZE,
             CELL_SIZE)
 
-    def draw_cell(self, x: int, y: int, cell: Cell, model: GameState):
+    def draw_cell(self, x: int, y: int, cell: Cell, data: GameStateDTO):
         """Draw a cell"""
         rect = self.compute_rect(x, y)
-        if (model.game_over and cell.is_mine) or (DEBUG_MODE and cell.is_mine):
+        if (data.game_over and cell.is_mine) or (DEBUG_MODE and cell.is_mine):
             self.screen.blit(BOMB_IMG, rect)
         elif cell.is_flagged:
             self.screen.blit(FLAG_IMG, rect)
@@ -136,18 +137,18 @@ class GameView:
         else:
             self.screen.blit(EMPTY_IMG, rect)
 
-    def draw_board(self, model: GameState):
+    def draw_board(self, data: GameStateDTO):
         """Draw the board"""
-        cells = model.cells
+        cells = data.cells
         for x in range(len(cells)):
             for y in range(len(cells[0])):
                 cell = cells[x][y]
-                self.draw_cell(x, y, cell, model)
-        if model.game_over:
+                self.draw_cell(x, y, cell, data)
+        if data.game_over:
             self.all_sprites.update()
             self.all_sprites.draw(self.screen)                
 
-    def __add_menu_buttons(self, btn, command_name):
+    def __add_menu_buttons(self, btn, command_name: str):
         """Add menu button and connect it to a command"""
         self.menu_buttons[btn.label] = btn
         btn.connect(lambda: self.commands[command_name].execute())
@@ -185,7 +186,7 @@ class GameView:
         self.__add_menu_buttons(restore_btn, RESTORE_COMMAND)
         self.__add_menu_buttons(scores_btn, SCORES_COMMAND)
 
-    def draw_menu(self, model: GameState):
+    def draw_menu(self, data: GameStateDTO):
         """Draw the menu"""
         pygame.draw.rect(
             self.screen, (200, 200, 200), (0, 0, MENU_WIDTH, self.window_height)
@@ -194,28 +195,28 @@ class GameView:
         for key, button in self.menu_buttons.items():
             if key.lower() in DIFFICULTY_LEVELS.keys():
                 button.is_selected = False
-        self.menu_buttons[model.difficulty.capitalize()].is_selected = True
+        self.menu_buttons[data.difficulty.capitalize()].is_selected = True
 
         for button in self.menu_buttons.values():
             button.draw(self.screen)
 
         STATS_Y = 320
-        if not model.game_over and not model.game_won:
-            timer_text = menu_font.render(f"Time: {model.ellapsed_time}", True, BLACK)
+        if not data.game_over and not data.game_won:
+            timer_text = menu_font.render(f"Time: {data.ellapsed_time}", True, BLACK)
             self.screen.blit(timer_text, (LEFT_MARGIN, STATS_Y))
 
-            mines_left = model.get_remaining_mines()
+            mines_left = data.get_remaining_mines()
             mines_text = menu_font.render(f"Mines: {mines_left}", True, BLACK)
             self.screen.blit(mines_text, (LEFT_MARGIN, STATS_Y + 40))
-        if model.game_won:
-            time_text = menu_font.render(f"Won in : {model.won_time}", True, BLACK)
+        if data.game_won:
+            time_text = menu_font.render(f"Won in : {data.won_time}", True, BLACK)
             self.screen.blit(time_text, (LEFT_MARGIN, STATS_Y))
 
-    def draw_status(self, model: GameState):
+    def draw_status(self, data: GameStateDTO):
         """Draw status: check if the game is won or over"""
-        if model.game_over:
+        if data.game_over:
             self.__draw_message("Game over", LIGHT_RED)
-        elif model.check_victory():
+        elif data.check_victory():
             self.__draw_message("You Win!", LIGHT_BLUE)
 
     def __draw_message(self, text: str, background_color: str):
@@ -238,9 +239,10 @@ class GameView:
         self.screen.blit(text, text_rect)
 
     def show_scores_dialog(self):
+        """Show the best scores dialog"""
         self.show_scores = True
 
-    def draw_best_scores(self, model: GameState):
+    def draw_best_scores(self, data: GameStateDTO):
         """Show the best scores"""
         if not self.show_scores:
             return
@@ -259,7 +261,7 @@ class GameView:
         self.screen.blit(title_text, title_rect)
 
         # draw the best scores
-        scores = model.best_scores
+        scores = data.best_scores
         scores_font = pygame.font.SysFont(None, 24)
         y = title_rect.bottom + 20
         for score in scores:
@@ -268,7 +270,8 @@ class GameView:
             self.screen.blit(score_text, score_rect)
             y += 30
 
-    def draw(self, model: GameState):
+    def draw(self, model: GameStateDTO):
+        """Draw the game"""
         if self.all_sprites is None:
             self.all_sprites = pygame.sprite.Group()
             for mine in model.mines:

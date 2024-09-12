@@ -15,24 +15,24 @@ def test_board_initialization(easy_game):
     """
     Test if the board initializes correctly with the right size and number of mines.
     """
-    assert easy_game.board.x_size == 9
-    assert easy_game.board.y_size == 9
-    assert easy_game.board.mines_count == 5
+    assert easy_game._board.x_size == 9
+    assert easy_game._board.y_size == 9
+    assert easy_game._board.mines_count == 5
 
 def test_cell_flagging(easy_game):
     """
     Test flagging functionality of the cells.
     """
-    easy_game.board.set_flag(0, 0)
-    assert easy_game.board.cells[0][0].is_flagged
+    easy_game._board.set_flag(0, 0)
+    assert easy_game._board.cells[0][0].is_flagged
 
 def test_game_loss_on_mine_reveal(easy_game):
     """
     Test if revealing a mine ends the game.
     """
-    for x in range(easy_game.board.x_size):
-        for y in range(easy_game.board.y_size):
-            cell = easy_game.board.cells[x][y]
+    for x in range(easy_game._board.x_size):
+        for y in range(easy_game._board.y_size):
+            cell = easy_game._board.cells[x][y]
             if cell.is_mine:
                 result = easy_game.reveal_cell(x, y)
                 assert result == 'X'
@@ -43,9 +43,9 @@ def test_game_win(easy_game):
     """
     Test winning the game by revealing all non-mined cells.
     """
-    for x in range(easy_game.board.x_size):
-        for y in range(easy_game.board.y_size):
-            cell = easy_game.board.cells[x][y]
+    for x in range(easy_game._board.x_size):
+        for y in range(easy_game._board.y_size):
+            cell = easy_game._board.cells[x][y]
             if not cell.is_mine:
                 result = easy_game.reveal_cell(x, y)
                 assert result != 'X'
