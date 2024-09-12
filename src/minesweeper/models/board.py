@@ -22,6 +22,7 @@ class Board:
             self.create_board()        
 
     def create_board(self):
+        """Create a new board with the specified difficulty level"""
         self.flags = 0
         self.x_size = DIFFICULTY_LEVELS[self.difficulty]['x_size']
         self.y_size = DIFFICULTY_LEVELS[self.difficulty]['y_size']
