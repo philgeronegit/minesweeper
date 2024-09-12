@@ -1,13 +1,13 @@
 import pytest
-from minesweeper.models.board import Board
-from minesweeper.models.gamestate import GameState
+from minesweeper.models.board import Board, EASY_DIFFICULTY
+from minesweeper.models.game_state import GameState
 
 @pytest.fixture
 def easy_game():
     """
     Fixture to initialize a 3x3 game with difficulty 'easy'.
     """
-    board = Board(x_size=3, y_size=3, mines=3, difficulty="easy")
+    board = Board(difficulty = EASY_DIFFICULTY)
     game_state = GameState(board)
     return game_state
 
@@ -15,9 +15,9 @@ def test_board_initialization(easy_game):
     """
     Test if the board initializes correctly with the right size and number of mines.
     """
-    assert easy_game.board.x_size == 3
-    assert easy_game.board.y_size == 3
-    assert easy_game.board.mines == 3
+    assert easy_game.board.x_size == 9
+    assert easy_game.board.y_size == 9
+    assert easy_game.board.mines == 5
 
 def test_cell_flagging(easy_game):
     """

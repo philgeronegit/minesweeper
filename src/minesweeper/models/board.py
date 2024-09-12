@@ -1,23 +1,36 @@
 import random
 from minesweeper.models.cell import Cell
 
-class Board:
-    DIFFICULTY_LEVELS = {
-        'easy': {'x_size': 9, 'y_size': 9, 'mines': 5},
-        'medium': {'x_size': 16, 'y_size': 16, 'mines': 40},
-        'hard': {'x_size': 30, 'y_size': 16, 'mines': 80}
-    }
+EASY_DIFFICULTY = 'easy'
+MEDIUM_DIFFICULTY = 'medium'
+HARD_DIFFICULTY = 'hard'
 
+DIFFICULTY_LEVELS = {
+    EASY_DIFFICULTY: {'x_size': 9, 'y_size': 9, 'mines': 5},
+    MEDIUM_DIFFICULTY: {'x_size': 16, 'y_size': 16, 'mines': 40},
+    HARD_DIFFICULTY: {'x_size': 30, 'y_size': 16, 'mines': 80}
+}
+
+class Board:
     # Initializes the board with dimensions and number of mines.
-    def __init__(self, x_size, y_size, mines, difficulty="easy"):
-        self.x_size = x_size                # Number of columns
-        self.y_size = y_size                # Number of rows
-        self.mines = mines                  # Number of mines
+    def __init__(self, difficulty: str = EASY_DIFFICULTY, cells: list[list[Cell]] = None):
         self.flags = 0                      # Number of flags placed
-        self.cells = [[Cell() for _ in range(y_size)] for _ in range(x_size)]  # Grid of cells
         self.difficulty = difficulty        # Difficulty level
+        if cells is not None:
+            self.cells = cells
+        else:
+            self.create_board()        
         self.generate_mines()               # Random placement of mines
         self._calculate_adjacent_mines()    # Calculate adjacent mines for each cell
+
+    def create_board(self):
+        self.flags = 0
+        self.x_size = DIFFICULTY_LEVELS[self.difficulty]['x_size']
+        self.y_size = DIFFICULTY_LEVELS[self.difficulty]['y_size']
+        self.mines = DIFFICULTY_LEVELS[self.difficulty]['mines']
+        self.cells = [
+            [Cell() for _ in range(self.y_size)] for _ in range(self.x_size)
+        ]
 
     # Initializes the board based on the difficulty level.
     @classmethod

@@ -1,29 +1,22 @@
 import time
-from minesweeper.models.board import Board
+from minesweeper.models.board import Board, EASY_DIFFICULTY
 
 # Here we initialize the game status based on the difficulty level
 class GameState:
-    def __init__(self, board):
-        self.board = board
+    def __init__(self, board: Board = None, difficulty: str = EASY_DIFFICULTY):
+        self.board = board if board is not None else Board(difficulty)
         self.start_time = None  # Time to start the game
         self.win_time = None    # Indicate how many time the player put to win
         self.game_over = False  # Indicate the end of the game
         self.game_won = False   # Indicate whether the player won the game
+        self.best_scores = ["30s", "40s", "50s"]
 
-    # Starts the game and initializes the timer.
-    def start_game(self):
+    # Reset the game and initializes the timer.
+    def reset(self):
         self.start_time = time.time()
         self.game_over = False
         self.game_won = False
-        self.win_time = None
-
-    # Check if the game is over.
-    def is_game_over(self):
-        return self.game_over
-
-    # Check if the player won the game.
-    def is_game_won(self):
-        return self.game_won
+        self.board.generate_mines()
 
     # Reveals the cell, and checks if it's a mine or a safe cell.
     def reveal_cell(self, x, y):
@@ -43,13 +36,14 @@ class GameState:
             return True
         return False
 
-    # Returns game duration in seconds.
-    def get_game_duration(self):
-        if self.start_time is None:
-            return 0
-        if self.game_won and self.win_time is not None:
-            return self.win_time - self.start_time  # Duration until the victory
-        return time.time() - self.start_time  # Duration since the game started
+    # Returns game ellapsed time.
+    @property
+    def ellapsed_time(self):
+        if not self.game_over and not self.game_won:
+            ellapsed_time = int(time.time() - self.start_time)
+            self.minutes = ellapsed_time // 60
+            self.seconds = ellapsed_time % 60
+        return f"{self.minutes:02}:{self.seconds:02}"
 
     # Returns the number of remaining mines.
     def get_remaining_mines(self):
