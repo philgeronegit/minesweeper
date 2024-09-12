@@ -138,7 +138,7 @@ class GameView:
 
     def draw_board(self, model: GameState):
         """Draw the board"""
-        cells = model.board.cells
+        cells = model.cells
         for x in range(len(cells)):
             for y in range(len(cells[0])):
                 cell = cells[x][y]
@@ -194,7 +194,7 @@ class GameView:
         for key, button in self.menu_buttons.items():
             if key.lower() in DIFFICULTY_LEVELS.keys():
                 button.is_selected = False
-        self.menu_buttons[model.board.difficulty.capitalize()].is_selected = True
+        self.menu_buttons[model.difficulty.capitalize()].is_selected = True
 
         for button in self.menu_buttons.values():
             button.draw(self.screen)
@@ -204,7 +204,7 @@ class GameView:
             timer_text = menu_font.render(f"Time: {model.ellapsed_time}", True, BLACK)
             self.screen.blit(timer_text, (LEFT_MARGIN, STATS_Y))
 
-            mines_left = model.board.mines_count - model.board.flags
+            mines_left = model.get_remaining_mines()
             mines_text = menu_font.render(f"Mines: {mines_left}", True, BLACK)
             self.screen.blit(mines_text, (LEFT_MARGIN, STATS_Y + 40))
         if model.game_won:
@@ -215,10 +215,7 @@ class GameView:
         """Draw status: check if the game is won or over"""
         if model.game_over:
             self.__draw_message("Game over", LIGHT_RED)
-        elif model.board.check_win():
-            model.game_won = True
-            model.won_time = model.ellapsed_time
-
+        elif model.check_victory():
             self.__draw_message("You Win!", LIGHT_BLUE)
 
     def __draw_message(self, text: str, background_color: str):
@@ -274,7 +271,7 @@ class GameView:
     def draw(self, model: GameState):
         if self.all_sprites is None:
             self.all_sprites = pygame.sprite.Group()
-            for mine in model.board.mines:
+            for mine in model.mines:
                 print(f"Creating explosion at {mine.x} {mine.y}")
                 rect = self.compute_rect(mine.x, mine.y)
                 explosion = AnimatedExplosion(rect.centerx, rect.centery)      

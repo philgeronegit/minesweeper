@@ -6,11 +6,23 @@ class GameState:
     def __init__(self, board: Board = None, difficulty: str = EASY_DIFFICULTY):
         self.board = board if board is not None else Board(difficulty)
         self.start_time = None  # Time to start the game
-        self.win_time = None    # Indicate how many time the player put to win
+        self.won_time = None    # Indicate how many time the player put to win
         self.game_over = False  # Indicate the end of the game
         self.game_won = False   # Indicate whether the player won the game
         self.best_scores = ["30s", "40s", "50s"]
         print(f"Game state created with difficulty {difficulty}")
+
+    @property 
+    def cells(self):
+        return self.board.cells
+
+    @property
+    def difficulty(self):
+        return self.board.difficulty
+
+    @property
+    def mines(self):
+        return self.board.mines
 
     # Reset the game and initializes the timer.
     def reset(self):
@@ -31,9 +43,8 @@ class GameState:
     # Check if the player has won the game.
     def check_victory(self):
         if self.board.check_win():
-            self.game_over = True
             self.game_won = True
-            self.win_time = time.time()  # Records the time when the victory is achieved
+            self.won_time = time.time()  # Records the time when the victory is achieved
             return True
         return False
 
