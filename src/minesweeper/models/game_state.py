@@ -39,11 +39,14 @@ class GameState:
     # Returns game ellapsed time.
     @property
     def ellapsed_time(self):
+        if self.start_time is None:
+            return "00:00"
+
         if not self.game_over and not self.game_won:
-            ellapsed_time = int(time.time() - self.start_time)
-            self.minutes = ellapsed_time // 60
-            self.seconds = ellapsed_time % 60
-        return f"{self.minutes:02}:{self.seconds:02}"
+            ellapsed_time = time.time() - self.start_time
+            minutes = int(ellapsed_time // 60)
+            seconds = int(ellapsed_time % 60)
+            return f"{minutes:02}:{seconds:02}"
 
     # Returns the number of remaining mines.
     def get_remaining_mines(self):
