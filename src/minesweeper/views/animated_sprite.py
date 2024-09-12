@@ -1,7 +1,7 @@
 import pygame
 
 EXPLOSION_IMG = "src/minesweeper/assets/explosion.png"
-TRANSPARENT_COLOR = (27, 26, 29)
+TRANSPARENT_COLOR = (36, 26, 37)
 explosion_sheet = pygame.image.load(EXPLOSION_IMG)
 explosion_sheet.set_colorkey(TRANSPARENT_COLOR)
 
@@ -41,6 +41,7 @@ class AnimatedExplosion(pygame.sprite.Sprite):
         self.current_frame = 0
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
         self.last_update = pygame.time.get_ticks()
         self.animation_complete = False
 

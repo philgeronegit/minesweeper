@@ -25,11 +25,12 @@ class Board:
         self.flags = 0
         self.x_size = DIFFICULTY_LEVELS[self.difficulty]['x_size']
         self.y_size = DIFFICULTY_LEVELS[self.difficulty]['y_size']
-        self.mines = DIFFICULTY_LEVELS[self.difficulty]['mines']
+        self.mines_count = DIFFICULTY_LEVELS[self.difficulty]['mines']
+        self.mines = []
         self.cells = [
-            [Cell() for _ in range(self.y_size)] for _ in range(self.x_size)
+            [Cell(x, y) for y in range(self.y_size)] for x in range(self.x_size)
         ]
-        print(f"Board created with {self.x_size}x{self.y_size} cells and {self.mines} mines")
+        print(f"Board created with {self.x_size}x{self.y_size} cells and {self.mines_count} mines")
 
     # Initializes the board based on the difficulty level.
     @classmethod
@@ -45,10 +46,13 @@ class Board:
     def generate_mines(self):
         self.create_board()
         mine_positions = set()
-        while len(mine_positions) < self.mines:
+        while len(mine_positions) < self.mines_count:
             x, y = random.randint(0, self.x_size - 1), random.randint(0, self.y_size - 1)
-            if not self.cells[x][y].is_mine:
-                self.cells[x][y].is_mine = True
+            cell = self.cells[x][y]
+            if not cell.is_mine:
+                print(f"Placing mine at {x} {y}")
+                cell.is_mine = True
+                self.mines.append(cell)
                 mine_positions.add((x, y))
         self._calculate_adjacent_mines()
 
@@ -84,7 +88,12 @@ class Board:
         cell = self.cells[x][y]
         if cell.is_opened or cell.is_flagged:
             return
+
         cell.is_opened = True
+
+        if cell.is_mine:
+            raise ValueError("Game Over")
+        
         if cell.adjacent_mines == 0 and not cell.is_mine:
             adjacent_positions = [(i, j) for i in range(x-1, x+2) for j in range(y-1, y+2)
                                   if 0 <= i < self.x_size and 0 <= j < self.y_size and (i, j) != (x, y)]

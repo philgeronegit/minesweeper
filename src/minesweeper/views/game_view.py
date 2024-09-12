@@ -19,11 +19,14 @@ from minesweeper.models.board import (
     HARD_DIFFICULTY,
 )
 from minesweeper.models.game_state import GameState
+from minesweeper.models.cell import Cell
 from minesweeper.views.animated_sprite import AnimatedExplosion
 from minesweeper.views.button import Button, OptionButton
 from minesweeper.views.vertical_layout import VerticalLayout
 
 # Constants
+DEBUG_MODE = True
+
 GRID_SIZE = 9
 CELL_SIZE = 40
 MARGIN = 5
@@ -63,11 +66,7 @@ class GameView:
         self.commands = {}
         self.show_scores = False
         pygame.display.set_caption("Minesweeper")
-
-        self.all_sprites = pygame.sprite.Group()
-        animated_sprite = AnimatedExplosion(0, 0)
-        self.all_sprites.add(animated_sprite)
-
+        self.all_sprites = None
         self.create_menu()
 
     @property
@@ -110,19 +109,23 @@ class GameView:
         screen_rect = screen.get_rect()
         screen_rect.center = pygame.display.get_surface().get_rect().center
         pygame.display.get_surface().blit(screen, screen_rect)
+        self.all_sprites = None
 
-    def draw_cell(self, x, y, cell):
-        """Draw a cell"""
-        rect = pygame.Rect(
+    def compute_rect(self, x: int, y: int):
+        """Compute the rectangle for a cell"""
+        return pygame.Rect(
             y * (CELL_SIZE + MARGIN) + MENU_WIDTH,
             x * (CELL_SIZE + MARGIN),
             CELL_SIZE,
-            CELL_SIZE,
-        )
-        if cell.is_flagged:
-            self.screen.blit(FLAG_IMG, rect)
-        elif cell.is_mine:
+            CELL_SIZE)
+
+    def draw_cell(self, x: int, y: int, cell: Cell, model: GameState):
+        """Draw a cell"""
+        rect = self.compute_rect(x, y)
+        if (model.game_over and cell.is_mine) or (DEBUG_MODE and cell.is_mine):
             self.screen.blit(BOMB_IMG, rect)
+        elif cell.is_flagged:
+            self.screen.blit(FLAG_IMG, rect)
         elif not cell.is_opened:
             self.screen.blit(NOT_REVEALED_IMG, rect)
         elif cell.adjacent_mines > 0:
@@ -139,7 +142,10 @@ class GameView:
         for x in range(len(cells)):
             for y in range(len(cells[0])):
                 cell = cells[x][y]
-                self.draw_cell(x, y, cell)
+                self.draw_cell(x, y, cell, model)
+        if model.game_over:
+            self.all_sprites.update()
+            self.all_sprites.draw(self.screen)                
 
     def __add_menu_buttons(self, btn, command_name):
         """Add menu button and connect it to a command"""
@@ -198,7 +204,7 @@ class GameView:
             timer_text = menu_font.render(f"Time: {model.ellapsed_time}", True, BLACK)
             self.screen.blit(timer_text, (LEFT_MARGIN, STATS_Y))
 
-            mines_left = model.board.mines - model.board.flags
+            mines_left = model.board.mines_count - model.board.flags
             mines_text = menu_font.render(f"Mines: {mines_left}", True, BLACK)
             self.screen.blit(mines_text, (LEFT_MARGIN, STATS_Y + 40))
         if model.game_won:
@@ -266,9 +272,13 @@ class GameView:
             y += 30
 
     def draw(self, model: GameState):
-        # self.all_sprites.update()
-        # self.screen.fill((255, 255, 255))
-        # self.all_sprites.draw(self.screen)
+        if self.all_sprites is None:
+            self.all_sprites = pygame.sprite.Group()
+            for mine in model.board.mines:
+                print(f"Creating explosion at {mine.x} {mine.y}")
+                rect = self.compute_rect(mine.x, mine.y)
+                explosion = AnimatedExplosion(rect.centerx, rect.centery)      
+                self.all_sprites.add(explosion)
         self.draw_menu(model)
         self.draw_board(model)
         self.draw_status(model)

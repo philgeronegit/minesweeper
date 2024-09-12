@@ -10,6 +10,7 @@ class GameState:
         self.game_over = False  # Indicate the end of the game
         self.game_won = False   # Indicate whether the player won the game
         self.best_scores = ["30s", "40s", "50s"]
+        print(f"Game state created with difficulty {difficulty}")
 
     # Reset the game and initializes the timer.
     def reset(self):
@@ -50,4 +51,4 @@ class GameState:
 
     # Returns the number of remaining mines.
     def get_remaining_mines(self):
-        return self.board.mines - self.board.flags
+        return self.board.mines_count - self.board.flags
