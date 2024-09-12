@@ -19,7 +19,6 @@ class VerticalLayout:
         self.top_margin = top_margin
 
     def add(self, widget: Widget):
-        print(f"Adding widget {widget}")
         widget.x = self.left_margin
         widget.y = self.compute_height()
         self.widgets.append(widget)
