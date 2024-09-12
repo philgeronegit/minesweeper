@@ -62,7 +62,7 @@ class GameController:
     def create_game(self):
         """Create a new game"""
         self.model.reset()
-        self.view.reset(self.model.board.grid_x_size, self.model.board.grid_y_size)
+        self.view.reset(self.model.board.x_size, self.model.board.y_size)
 
     def set_difficulty(self, difficulty: str):
         """Set the difficulty of the game"""
