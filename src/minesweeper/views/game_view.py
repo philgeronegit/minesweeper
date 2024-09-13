@@ -26,7 +26,7 @@ from minesweeper.views.button import Button, OptionButton
 from minesweeper.views.vertical_layout import VerticalLayout
 
 # Constants
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 GRID_SIZE = 9
 CELL_SIZE = 40
