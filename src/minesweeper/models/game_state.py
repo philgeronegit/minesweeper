@@ -1,5 +1,6 @@
 import time
 from minesweeper.models.board import Board, EASY_DIFFICULTY
+from minesweeper.models.persistence import JsonPersistence
 
 
 class GameState:
@@ -12,7 +13,10 @@ class GameState:
         self.best_scores = []
         self.score_added = False
         self.first_cell_revealed = False
+        self.persistence = JsonPersistence()
         print(f"Game state created with difficulty {difficulty}")
+        if self.persistence.is_file_exists():
+            self.best_scores = self.persistence.load()
 
     @property
     def cells(self):
@@ -64,6 +68,7 @@ class GameState:
                 if len(self.best_scores) > 5:
                     self.best_scores.pop()
                 print(f"Best scores: {self.best_scores}")
+                self.persistence.dump(self.best_scores)
 
             return True
         return False
