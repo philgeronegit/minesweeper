@@ -40,6 +40,8 @@ BOMB_IMG = pygame.image.load("src/minesweeper/assets/bomb.png")
 EMPTY_IMG = pygame.image.load("src/minesweeper/assets/empty.png")
 FLAG_IMG = pygame.image.load("src/minesweeper/assets/flags.png")
 
+EXPLOSION_SOUND = pygame.mixer.Sound("src/minesweeper/assets/explosion.mp3")
+
 LEFT_MARGIN = 20
 BUTTON_WIDTH = 170
 BUTTON_HEIGHT = 40
@@ -69,6 +71,7 @@ class GameView:
         pygame.display.set_caption("Minesweeper")
         self.all_sprites = None
         self.create_menu()
+        self.played_explosion = False
 
     @property
     def center(self):
@@ -118,6 +121,7 @@ class GameView:
         screen_rect.center = pygame.display.get_surface().get_rect().center
         pygame.display.get_surface().blit(screen, screen_rect)
         self.all_sprites = None
+        self.played_explosion = False
 
     def compute_rect(self, x: int, y: int):
         """Compute the rectangle for a cell"""
@@ -228,6 +232,9 @@ class GameView:
         """Draw status: check if the game is won or over"""
         if data.game_over:
             self.__draw_message("Game over", LIGHT_RED)
+            if not self.played_explosion:
+                pygame.mixer.Sound.play(EXPLOSION_SOUND)
+                self.played_explosion = True
         elif data.check_victory():
             self.__draw_message("You Win!", LIGHT_BLUE)
 
