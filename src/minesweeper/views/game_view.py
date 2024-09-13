@@ -135,10 +135,11 @@ class GameView:
     def draw_cell(self, x: int, y: int, cell: Cell, data: GameStateDTO):
         """Draw a cell"""
         rect = self.compute_rect(x, y)
-        if (data.game_over and cell.is_mine) or (DEBUG_MODE and cell.is_mine):
-            self.screen.blit(BOMB_IMG, rect)
-        elif cell.is_flagged:
+        if cell.is_flagged:
             self.screen.blit(FLAG_IMG, rect)
+        elif (data.game_over and cell.is_mine) or (DEBUG_MODE and cell.is_mine):
+            self.screen.blit(BOMB_IMG, rect)
+
         elif not cell.is_opened:
             self.screen.blit(NOT_REVEALED_IMG, rect)
         elif cell.adjacent_mines > 0:
@@ -222,7 +223,9 @@ class GameView:
             self.screen.blit(timer_text, (LEFT_MARGIN, STATS_Y))
 
             mines_left = data.get_remaining_mines()
-            mines_text = menu_font.render(f"Mines: {mines_left}", True, BLACK)
+            mines_text = menu_font.render(
+                f"Mines: {mines_left}/{len(data.mines)}", True, BLACK
+            )
             self.screen.blit(mines_text, (LEFT_MARGIN, STATS_Y + 40))
         if data.game_won:
             time_text = menu_font.render(f"Won in : {data.won_time}", True, BLACK)
