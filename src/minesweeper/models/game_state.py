@@ -9,7 +9,8 @@ class GameState:
         self.won_time = None  # Indicate how many time the player put to win
         self.game_over = False  # Indicate the end of the game
         self.game_won = False  # Indicate whether the player won the game
-        self.best_scores = ["30s", "40s", "50s"]
+        self.best_scores = []
+        self.score_added = False
         self.first_cell_revealed = False
         print(f"Game state created with difficulty {difficulty}")
 
@@ -33,6 +34,7 @@ class GameState:
         self.start_time = None
         self.game_over = False
         self.game_won = False
+        self.score_added = False
         self.first_cell_revealed = False
         self._board.generate_mines()
 
@@ -54,6 +56,15 @@ class GameState:
         if self._board.check_win():
             self.won_time = self.ellapsed_time
             self.game_won = True
+
+            if not self.score_added:
+                self.score_added = True
+                self.best_scores.append(self.ellapsed_time)
+                self.best_scores.sort()
+                if len(self.best_scores) > 5:
+                    self.best_scores.pop()
+                print(f"Best scores: {self.best_scores}")
+
             return True
         return False
 

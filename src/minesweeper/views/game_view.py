@@ -78,6 +78,10 @@ class GameView:
     def handle_input(self, event, data: GameStateDTO):
         """Handle user input"""
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.show_scores:
+                self.show_scores = False
+                return
+
             x, y = event.pos
             if x < MENU_WIDTH:
                 for button in self.menu_buttons.values():
@@ -255,18 +259,27 @@ class GameView:
         if not self.show_scores:
             return
 
-        # create a dialog box like surface with a title, a list of the two best scores and a close button
         dialog_width = 400
         dialog_height = 300
         dialog_surface = pygame.Surface((dialog_width, dialog_height))
         dialog_surface.fill((255, 255, 255))
         dialog_rect = dialog_surface.get_rect(center=self.center)
         self.screen.blit(dialog_surface, dialog_rect)
+
+        pygame.draw.rect(self.screen, BLACK, dialog_rect, 2)
+        pygame.draw.rect(
+            self.screen,
+            GRAY,
+            (dialog_rect.left + 2, dialog_rect.top + 2, dialog_rect.width - 4, 50),
+        )
         # draw the title
         title_font = pygame.font.SysFont(None, 36)
         title_text = title_font.render("Best Scores", True, BLACK)
         title_rect = title_text.get_rect(center=(self.center[0], dialog_rect.top + 30))
         self.screen.blit(title_text, title_rect)
+
+        close_button = Button("X", 30, 30, dialog_rect.right - 35, dialog_rect.top + 15)
+        close_button.draw(self.screen)
 
         # draw the best scores
         scores = data.best_scores
